@@ -1,0 +1,50 @@
+version: '3.3'
+
+services:
+  master:
+    image: reactconsulting/jenkins-master:latest
+    volumes: 
+      - jenkins:C:\Jenkins
+      - .\workspace:C:\Workspace
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 1024M
+  
+  agent_msbuild14.01:
+    image: reactconsulting/jenkins-agent-msbuild:14.x
+    depends_on: 
+      - master
+    environment:
+      JENKINS_MASTER_HOST: master:8080
+      JENKINS_AGENT_ID: 'msbuild14.01'
+      JENKINS_SECRET: '5c9e1bb610d8f2561310f34bd6ef6cd3073bd20a048036d8f6e4175eea86680f'
+      JENKINS_WORKDIR: 'C:\Workspace'
+    volumes: 
+      - .\workspace\msbuild14.01:C:\Workspace
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 2048M
+
+  agent_nodejs8.01:
+    image: reactconsulting/jenkins-agent-nodejs:v8.x
+    depends_on: 
+      - master
+    environment:
+      JENKINS_MASTER_HOST: master:8080
+      JENKINS_AGENT_ID: 'nodejs8.01'
+      JENKINS_SECRET: '81a943a0b9c985efbb53126ae41f69b9fe57541b36b3d0f4b4357762fc1208f0'
+      JENKINS_WORKDIR: 'C:\Workspace'
+    volumes: 
+      - .\workspace\nodejs8.01:C:\Workspace
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 2048M
+
+volumes:
+  jenkins:
